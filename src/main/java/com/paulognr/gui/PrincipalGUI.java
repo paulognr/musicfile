@@ -23,7 +23,7 @@ public class PrincipalGUI extends JFrame {
     private int progressValue = 0;
 
     public PrincipalGUI () {
-        super("Renomear músicas");
+        super("Renomear arquivos");
 
         panel = new JPanel(new GridBagLayout(), false);
 
@@ -63,7 +63,7 @@ public class PrincipalGUI extends JFrame {
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
         panel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createEtchedBorder(), "Pasta"));
+                BorderFactory.createEtchedBorder(), " ^-^ "));
         add(panel);
 
         setSize(320, 200);
@@ -87,17 +87,13 @@ public class PrincipalGUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 progressInfor.execute();
+                selectFolderButtton.setEnabled(false);
                 renameButton.setEnabled(false);
                 renameByFolder(label.getText());
-                label.setText("Finalizado!");
 
-                try {
-                    Thread.sleep(10000);
-                } catch (InterruptedException e1) {
-                    //
-                } finally {
-                    System.exit(0);
-                }
+                progressBar.setValue(progressValue);
+                progressBar.setString(progressValue + "%");
+                label.setText("Finalizado!");
             }
         });
     }
@@ -107,12 +103,18 @@ public class PrincipalGUI extends JFrame {
         protected Object doInBackground() throws Exception {
             boolean repeat = true;
             while (repeat) {
+                if(progressValue == 100) {
+                    repeat = false;
+                }
+
                 System.out.println("Progress value: " + progressValue);
                 progressBar.setValue(progressValue);
                 progressBar.setString(progressValue + "%");
 
-                if(progressValue == 100) {
-                    repeat = false;
+                try {
+                    Thread.sleep(20);
+                } catch (InterruptedException e1) {
+                    //
                 }
             }
             return 0;
@@ -137,7 +139,7 @@ public class PrincipalGUI extends JFrame {
                 File originFile = new File(originFileName);
                 originFile.renameTo(new File(newFileName));
 
-                progressValue = 100 / files.size() * (i + 1);
+                progressValue = (int)Math.floor((i + 1) * 100 / files.size());
             }
             progressValue = 100;
         }
